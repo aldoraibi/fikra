@@ -1,5 +1,5 @@
 /* فكرة — service worker: cache-first shell so the app opens offline. */
-var CACHE = 'fikra-v1';
+var CACHE = 'fikra-v2';
 var SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (e) {
