@@ -167,6 +167,36 @@
   .note button { background: transparent; border: 0; padding: 0 2px; color: var(--accent); font-weight: 600; font-size: .85rem; }
   .note p { margin: 0; }
 
+  .bridge {
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--surface);
+  }
+  .bridge summary {
+    cursor: pointer;
+    font-size: .86rem;
+    font-weight: 600;
+    list-style: none;
+  }
+  .bridge summary::-webkit-details-marker { display: none; }
+  .bridge summary::before { content: "⌄ "; color: var(--muted); }
+  .bridge[open] summary::before { content: "⌃ "; }
+  .bridge .body { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+  .bridge p { margin: 0; font-size: .79rem; color: var(--muted); }
+  .bridge label.check { display: flex; gap: 9px; align-items: flex-start; font-size: .87rem; cursor: pointer; }
+  .bridge input[type="checkbox"] { margin-top: 5px; flex: none; width: 17px; height: 17px; accent-color: var(--accent); }
+  .bridge input[type="text"] {
+    font: inherit; font-size: .88rem; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 9px; padding: 8px 10px; width: 100%;
+  }
+  .bridge ol { margin: 0; padding-inline-start: 18px; font-size: .79rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .bridge code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .86em; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
   footer { border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
   footer p { margin: 0; font-size: .78rem; color: var(--muted); }
   .tools { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -207,6 +237,25 @@
 
   <ul id="list"></ul>
   <div class="empty" id="empty" hidden></div>
+
+  <details class="bridge" id="bridge">
+    <summary>ربط بتطبيق التذكيرات (آيفون · آيباد · ماك)</summary>
+    <div class="body">
+      <label class="check">
+        <input type="checkbox" id="bridge-on">
+        <span>أرسل كل فكرة أحفظها إلى تطبيق التذكيرات تلقائياً</span>
+      </label>
+      <input type="text" id="bridge-name" value="Fikra" placeholder="اسم الاختصار" aria-label="اسم الاختصار">
+      <p>يحتاج اختصاراً واحداً في تطبيق الاختصارات، تنشئه مرة واحدة:</p>
+      <ol>
+        <li>اختصار جديد ← إجراء <code>إضافة تذكير جديد</code></li>
+        <li>نص التذكير: <code>إدخال الاختصار</code> · القائمة: التي تريدها</li>
+        <li>فعّل <code>إظهار في ورقة المشاركة</code> من إعدادات الاختصار</li>
+        <li>سمِّ الاختصار بنفس الاسم المكتوب فوق</li>
+      </ol>
+      <p>بعدها: تكتب الفكرة هنا وتضغط حفظ ← تنتقل للتذكيرات مباشرة، وتبقى نسخة منها هنا.</p>
+    </div>
+  </details>
 
   <footer>
     <div class="tools">
@@ -490,10 +539,49 @@
       syncSave();
       if (filter === 'done' || filter === 'due') setFilter('open');
       else render();
-      say('انحفظت ✓');
-      box.focus();
+      if (sendToReminders(v)) {
+        say('انحفظت ← جاري إرسالها للتذكيرات ✓');
+      } else {
+        say('انحفظت ✓');
+        box.focus();
+      }
     }
   });
+
+  /* ---------- reminders bridge ---------- */
+
+  var bridgeOn = document.getElementById('bridge-on');
+  var bridgeName = document.getElementById('bridge-name');
+  var BRIDGE_KEY = 'fikra.bridge';
+
+  (function initBridge() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(BRIDGE_KEY) || 'null'); } catch (e) {}
+    if (saved) {
+      bridgeOn.checked = !!saved.on;
+      if (saved.name) bridgeName.value = saved.name;
+      if (saved.on) document.getElementById('bridge').open = false;
+    }
+    function store() {
+      try {
+        localStorage.setItem(BRIDGE_KEY, JSON.stringify({
+          on: bridgeOn.checked,
+          name: bridgeName.value.trim() || 'Fikra'
+        }));
+      } catch (e) {}
+    }
+    bridgeOn.addEventListener('change', store);
+    bridgeName.addEventListener('change', store);
+  })();
+
+  function sendToReminders(text) {
+    if (!bridgeOn.checked) return false;
+    var name = (bridgeName.value || 'Fikra').trim();
+    if (!name) return false;
+    window.location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent(name)
+      + '&input=text&text=' + encodeURIComponent(text);
+    return true;
+  }
 
   box.addEventListener('keydown', function (e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); save.click(); }
