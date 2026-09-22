@@ -163,7 +163,9 @@
         <span>أرسل كل فكرة إلى التذكيرات عبر الاختصار</span>
       </label>
       <input type="text" id="shortcut-name" value="Fikrah" aria-label="اسم الاختصار">
-      <p>الاختصار «Fikrah» يضيف الفكرة إلى قائمة صندوق الأفكار في تطبيق التذكيرات. القائمة هنا مجرد سجل لآخر ما سجّلته — المرجع هو التذكيرات.</p>
+      <p>الاختصار «Fikrah» يضيف الفكرة إلى قائمة صندوق الأفكار في تطبيق التذكيرات، ثم يرجعك هنا تلقائياً.</p>
+      <p><strong>لتقليل الوميض:</strong> افتح الاختصار في تطبيق الاختصارات ← أيقونة الإعدادات ⓘ ← أطفئ <span dir="ltr">Show When Run</span> / «إظهار عند التشغيل». حينها يمر التبديل بأسرع ما يمكن.</p>
+      <p>القائمة هنا مجرد سجل لآخر ما سجّلته — المرجع هو تطبيق التذكيرات.</p>
       <button type="button" id="resend">أعد إرسال آخر فكرة</button>
     </div>
   </details>
@@ -288,9 +290,14 @@
     if (!name) { say('اكتب اسم الاختصار في الإعدادات', true); return; }
     it.sent = true;
     persist(); render();
-    say('فتح الاختصار… ستعود هنا بعد ثانية');
-    window.location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent(name)
-      + '&input=text&text=' + encodeURIComponent(it.text);
+    say('لحظة… يُضاف للتذكيرات ويرجعك');
+
+    var back = location.origin + location.pathname;
+    window.location.href = 'shortcuts://x-callback-url/run-shortcut'
+      + '?name=' + encodeURIComponent(name)
+      + '&input=text&text=' + encodeURIComponent(it.text)
+      + '&x-success=' + encodeURIComponent(back)
+      + '&x-error=' + encodeURIComponent(back + '?err=1');
   }
 
   function syncSave() { save.disabled = box.value.trim().length === 0; }
