@@ -245,7 +245,7 @@
         <input type="checkbox" id="bridge-on">
         <span>أرسل كل فكرة أحفظها إلى تطبيق التذكيرات تلقائياً</span>
       </label>
-      <input type="text" id="bridge-name" value="Fikra" placeholder="اسم الاختصار" aria-label="اسم الاختصار">
+      <input type="text" id="bridge-name" value="Fikrah" placeholder="اسم الاختصار" aria-label="اسم الاختصار">
       <p>يحتاج اختصاراً واحداً في تطبيق الاختصارات، تنشئه مرة واحدة:</p>
       <ol>
         <li>اختصار جديد ← إجراء <code>إضافة تذكير جديد</code></li>
@@ -566,7 +566,7 @@
       try {
         localStorage.setItem(BRIDGE_KEY, JSON.stringify({
           on: bridgeOn.checked,
-          name: bridgeName.value.trim() || 'Fikra'
+          name: bridgeName.value.trim() || 'Fikrah'
         }));
       } catch (e) {}
     }
@@ -576,7 +576,7 @@
 
   function sendToReminders(text) {
     if (!bridgeOn.checked) return false;
-    var name = (bridgeName.value || 'Fikra').trim();
+    var name = (bridgeName.value || 'Fikrah').trim();
     if (!name) return false;
     window.location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent(name)
       + '&input=text&text=' + encodeURIComponent(text);
