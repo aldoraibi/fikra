@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دليل «فكرة» — التثبيت والربط بالتذكيرات والتقويم</title>
+<meta name="description" content="كيف تثبّت «فكرة» على جوالك وحاسبك، وتربطها بالتقويم و«التذكيرات» في آبل، مع «روتين» ومن دونه.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0E131C" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#E9EDF4" media="(prefers-color-scheme: light)">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../icon-180.png">
+<style>
+  @font-face { font-family: "thmanyah sans"; src: url(../sandooq/fonts/thmanyahsans-Regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "thmanyah sans"; src: url(../sandooq/fonts/thmanyahsans-Medium.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "thmanyah sans"; src: url(../sandooq/fonts/thmanyahsans-Bold.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "thmanyah serif display"; src: url(../sandooq/fonts/thmanyahserifdisplay-Medium.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+
+  /* «منتصف الليل» — الداكن من الهوية، والفاتح مشتق منها */
+  :root {
+    --deep: #0E131C; --panel: rgba(30,36,48,.62); --text: #EEF2F8;
+    --text2: rgba(226,233,245,.60); --faint: rgba(226,233,245,.34);
+    --line: rgba(190,205,230,.12); --card: rgba(226,233,245,.05);
+    --accent: #DCE4F0; --on-accent: #1E2430; --active: #6EA8FF; --warn: #FFB4A8;
+    --g1: rgba(46,58,80,.9); --g2: rgba(62,74,94,.55); --hl: rgba(255,255,255,.14);
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --deep: #E9EDF4; --panel: rgba(247,249,252,.78); --text: #1E2430;
+      --text2: rgba(30,36,48,.68); --faint: rgba(30,36,48,.50);
+      --line: rgba(30,36,48,.12); --card: rgba(255,255,255,.62);
+      --accent: #1E2430; --on-accent: #EEF2F8; --active: #2A64C4; --warn: #B4412E;
+      --g1: rgba(255,255,255,.95); --g2: rgba(197,208,226,.8); --hl: rgba(255,255,255,.9);
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--deep); color: var(--text);
+    font-family: "thmanyah sans", "SF Arabic", "Geeza Pro", system-ui, sans-serif;
+    font-size: 17px; line-height: 1.75; -webkit-text-size-adjust: 100%;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(520px 380px at 88% 4%, var(--g1), transparent 70%),
+      radial-gradient(480px 380px at 6% 70%, var(--g2), transparent 70%);
+    filter: blur(20px);
+  }
+  a { color: var(--active); }
+  code, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .86em;
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+  .wrap { max-width: 760px; margin-inline: auto; padding: max(20px, env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 18px; }
+  .glass {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 20px;
+    -webkit-backdrop-filter: blur(28px) saturate(1.5); backdrop-filter: blur(28px) saturate(1.5);
+    box-shadow: inset 0 1px 0 var(--hl);
+  }
+  header.hero { display: flex; gap: 16px; align-items: center; padding: 22px; }
+  header.hero img { width: 76px; height: 76px; flex: none; }
+  h1 { margin: 0; font-family: "thmanyah serif display", "thmanyah sans", serif; font-weight: 500; font-size: clamp(1.7rem, 5vw, 2.2rem); line-height: 1.3; }
+  .lead { margin: 4px 0 0; color: var(--text2); }
+  nav.toc { padding: 16px 20px; }
+  nav.toc h2 { font-size: .9rem; color: var(--text2); margin: 0 0 6px; }
+  nav.toc ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 2px; }
+  nav.toc a { color: var(--text); text-decoration: none; display: inline-block; min-height: 32px; }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--active); }
+  section.part { padding: 22px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+  section.part > h2 { margin: 0; font-size: 1.35rem; display: flex; gap: 10px; align-items: center; }
+  .num { font-family: "thmanyah serif display", serif; font-variant-numeric: tabular-nums;
+    width: 34px; height: 34px; border-radius: 10px; flex: none; display: inline-grid; place-items: center;
+    background: var(--accent); color: var(--on-accent); font-size: 1rem; }
+  h3 { margin: 6px 0 0; font-size: 1.05rem; }
+  p { margin: 0; }
+  .muted { color: var(--text2); }
+  ol.steps, ul.points { margin: 0; padding-inline-start: 24px; display: grid; gap: 8px; }
+  ol.steps li::marker { color: var(--text2); font-weight: 700; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .note { border-inline-start: 3px solid var(--active); }
+  .warn { border-inline-start: 3px solid var(--warn); }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: .85rem; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: .95rem; }
+  .flow span.n { padding: 6px 12px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); }
+  .flow span.a { color: var(--text2); }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: start; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--text2); font-weight: 500; font-size: .85rem; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px;
+    border-radius: 999px; text-decoration: none; font-weight: 500; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 700; }
+  .btn:focus-visible, nav.toc a:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+  footer { display: flex; justify-content: center; align-items: center; gap: 6px; color: var(--faint); font-size: 12px; font-weight: 500; padding-top: 8px; }
+  footer .sig { height: 10px; width: auto; direction: ltr; display: block; }
+  @media (max-width: 520px) { th:nth-child(1), td:nth-child(1) { width: 34%; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero glass">
+  <img src="../icon-512.png" alt="" width="76" height="76">
+  <div>
+    <h1>دليل «فكرة»</h1>
+    <p class="lead">ثبّتها على جهازك، واربطها بالتقويم و«التذكيرات» — مع «روتين» ومن دونه.</p>
+  </div>
+</header>
+
+<nav class="toc glass" aria-label="المحتويات">
+  <h2>المحتويات</h2>
+  <ol>
+    <li><a href="#install">التثبيت على جهازك</a></li>
+    <li><a href="#calendar">الربط بالتقويم</a></li>
+    <li><a href="#reminders">الربط بـ«التذكيرات» (آيفون وآيباد وماك)</a></li>
+    <li><a href="#routine">الربط باستخدام «روتين» (ماك)</a></li>
+    <li><a href="#compare">أي طريقة تناسبك؟</a></li>
+    <li><a href="#privacy">الخصوصية ونقل أفكارك</a></li>
+    <li><a href="#help">إذا لم يعمل شيء</a></li>
+  </ol>
+</nav>
+
+<!-- ١ -->
+<section class="part glass" id="install">
+  <h2><span class="num">1</span>التثبيت على جهازك</h2>
+  <p class="muted">«فكرة» تطبيق ويب: لا متجر ولا حساب. ثبّتها لتصير أيقونة تفتح مباشرة، وتحفظ أفكارك بشكل دائم، وتعمل دون اتصال.</p>
+
+  <h3>آيفون وآيباد</h3>
+  <ol class="steps">
+    <li>افتح <a href="../">aldoraibi.github.io/fikra</a> في سفاري.</li>
+    <li>اضغط النقاط الثلاث <b>⋯</b> بجانب شريط العنوان، ثم <b>مشاركة</b>.<br><span class="muted">في الإصدارات الأقدم من ⁧iOS 26⁩: زر المشاركة أسفل الشاشة مباشرة.</span></li>
+    <li>مرّر للأسفل واختر <b>إضافة إلى الشاشة الرئيسية</b>.</li>
+    <li>تأكد أن <b>فتح كتطبيق ويب</b> مفعّل، ثم اضغط <b>إضافة</b>.</li>
+  </ol>
+
+  <h3>ماك</h3>
+  <ol class="steps">
+    <li>افتح الرابط في سفاري.</li>
+    <li>من شريط القوائم: <b>ملف ← إضافة إلى <bdi>Dock</bdi></b>.</li>
+  </ol>
+
+  <h3>أندرويد وحاسبات ويندوز</h3>
+  <ol class="steps">
+    <li>افتح الرابط في كروم.</li>
+    <li>أندرويد: قائمة المتصفح <b>⋮</b> ← <b>تثبيت التطبيق</b> (أو «إضافة إلى الشاشة الرئيسية»). الحاسب: أيقونة التثبيت في طرف شريط العنوان.</li>
+  </ol>
+
+  <div class="card note">
+    <p><b>مهم:</b> النسخة المثبّتة لها تخزينها الخاص، منفصل عن المتصفح. إن كتبت أفكاراً في المتصفح قبل التثبيت فانقلها بزر <b>تصدير نسخة</b> ثم <b>استيراد</b> داخل النسخة المثبّتة.</p>
+  </div>
+
+  <h3>الإملاء بالصوت</h3>
+  <p>اضغط <b>تسجيل</b> وتكلّم، ثم <b>حفظ</b>. إن لم يظهر زر التسجيل في متصفحك فاستخدم زر المايك في لوحة المفاتيح؛ يعمل في كل الأجهزة.</p>
+</section>
+
+<!-- ٢ -->
+<section class="part glass" id="calendar">
+  <h2><span class="num">2</span>الربط بالتقويم</h2>
+  <p class="muted">يعمل مع تقويم آبل وقوقل وأوتلوك، ولا يحتاج أي إعداد مسبق.</p>
+  <ol class="steps">
+    <li>في بطاقة الفكرة اضغط <b>جدولة</b>.</li>
+    <li>اختر التاريخ والوقت، ثم اضغط <b>أضف للتقويم</b>.</li>
+    <li>تنزّل «فكرة» ملف موعد صغيراً (<code>.ics</code>) مدته نصف ساعة، ومعه تنبيه قبل الموعد بـ⁧15 دقيقة⁩.</li>
+    <li>افتح الملف: على آيفون وآيباد وماك يعرض النظام الموعد، فاضغط <b>إضافة</b> ليدخل تقويمك. على أندرويد اختر تطبيق التقويم لفتحه.</li>
+  </ol>
+  <div class="card">
+    <p><b>تقويم قوقل على الحاسب:</b> افتح <b>الإعدادات ← استيراد وتصدير ← استيراد</b> واختر الملف.</p>
+  </div>
+  <p class="muted">تريد الموعد داخل «فكرة» فقط دون التقويم؟ اضغط <b>احفظ الموعد فقط</b>. تظهر الفكرة في تبويب «مجدولة» مرتّبة بموعدها.</p>
+</section>
+
+<!-- ٣ -->
+<section class="part glass" id="reminders">
+  <h2><span class="num">3</span>الربط بـ«التذكيرات»</h2>
+  <p class="muted">صفحة الويب لا تستطيع الكتابة في «التذكيرات» بنفسها، فنستعين باختصار صغير تنشئه مرة واحدة في تطبيق «الاختصارات». بعدها كل فكرة تحفظها تصل إلى «التذكيرات» مباشرة، وتبقى نسخة منها في «فكرة».</p>
+  <div class="chips"><span class="chip">آيفون</span><span class="chip">آيباد</span><span class="chip">ماك</span><span class="chip">لا يعمل على أندرويد وويندوز</span></div>
+
+  <h3>أ. جهّز قائمة للأفكار (اختياري ومستحسن)</h3>
+  <p>في تطبيق «التذكيرات» أنشئ قائمة جديدة باسم <b>صندوق الأفكار</b>، حتى لا تختلط أفكارك بمهامك.</p>
+
+  <h3>ب. أنشئ الاختصار</h3>
+  <ol class="steps">
+    <li>افتح تطبيق <b>الاختصارات</b> واضغط <b>+</b>.</li>
+    <li>ابحث عن إجراء <b>إضافة تذكير جديد</b> وأضفه.</li>
+    <li>اضغط كلمة <b>تذكير</b> داخل الإجراء واختر المتغيّر <b>مُدخل الاختصار</b>.</li>
+    <li>اضغط اسم القائمة داخل الإجراء واختر <b>صندوق الأفكار</b> (أو أي قائمة تريد).</li>
+    <li>اضغط اسم الاختصار أعلى الشاشة ← <b>التفاصيل</b> ← فعّل <b>إظهار في ورقة المشاركة</b>، واجعل نوع المُدخل <b>نص</b>. هذا ما يسمح للاختصار باستقبال نص الفكرة.</li>
+    <li>سمِّ الاختصار <code dir="ltr">Fikrah</code> تماماً بالحروف نفسها، ثم <b>تم</b>.</li>
+  </ol>
+
+  <h3>ج. فعّل الربط في «فكرة»</h3>
+  <ol class="steps">
+    <li>في أسفل «فكرة» افتح <b>ربط بتطبيق التذكيرات</b>.</li>
+    <li>فعّل <b>أرسل كل فكرة أحفظها إلى تطبيق التذكيرات تلقائياً</b>.</li>
+    <li>تأكد أن خانة اسم الاختصار فيها <code dir="ltr">Fikrah</code> (أو الاسم الذي اخترته).</li>
+  </ol>
+
+  <h3>د. جرّب</h3>
+  <ol class="steps">
+    <li>اكتب فكرة واضغط <b>حفظ</b>.</li>
+    <li>أول مرة فقط سيسألك النظام: هل تسمح بفتح «الاختصارات»؟ ثم يطلب الاختصار إذن الوصول إلى «التذكيرات». اختر <b>السماح دائماً</b>.</li>
+    <li>ينتقل الجهاز إلى «الاختصارات» ويضيف التذكير. ارجع إلى «فكرة» بزر الرجوع الصغير أعلى الشاشة، أو من مبدّل التطبيقات. الفكرة محفوظة في «فكرة» أيضاً.</li>
+  </ol>
+
+  <div class="card note">
+    <p><b>تريد أسرع التقاط؟</b> صفحة <a href="../sandooq/">صندوق الأفكار</a> رفيقة «فكرة»: خانة واحدة وزر واحد، وكل ما تكتبه يذهب إلى «التذكيرات» بالاختصار نفسه. ثبّتها على الشاشة الرئيسية بالطريقة نفسها.</p>
+  </div>
+  <div class="card">
+    <p><b>والتذكير بموعد؟</b> التذكير يصل بلا موعد. افتحه في «التذكيرات» وحدّد له يوماً ووقتاً، أو دع «روتين» يرتّبه لك تلقائياً (الخطوة التالية).</p>
+  </div>
+</section>
+
+<!-- ٤ -->
+<section class="part glass" id="routine">
+  <h2><span class="num">4</span>الربط باستخدام «روتين»</h2>
+  <p class="muted">«روتين» تطبيق ماك يضع مهامك في تقويم يومي وأسبوعي وشهري. يقرأ «التذكيرات»، فيلتقط أفكارك من قائمتها ويضع كل واحدة في وقت فارغ من يومك، ثم يكتب موعدها في التذكير نفسه فيصلك التنبيه على جوالك.</p>
+
+  <div class="flow" aria-label="مسار الفكرة">
+    <span class="n">«فكرة» أو «صندوق الأفكار»</span><span class="a">←</span>
+    <span class="n">الاختصار</span><span class="a">←</span>
+    <span class="n">قائمة «صندوق الأفكار» في التذكيرات</span><span class="a">←</span>
+    <span class="n"><bdi>iCloud</bdi></span><span class="a">←</span>
+    <span class="n">«روتين» على الماك</span><span class="a">←</span>
+    <span class="n">موعد في التذكير وتنبيه</span>
+  </div>
+
+  <ol class="steps">
+    <li>أكمل الخطوة <a href="#reminders">3</a> أولاً، واختر في الاختصار قائمة <b>صندوق الأفكار</b>.</li>
+    <li>تأكد أن «التذكيرات» تتزامن عبر <bdi>iCloud</bdi> في جوالك وماكك: <b>الإعدادات ← اسمك ← <bdi>iCloud</bdi> ← التذكيرات</b> على الجوال، و<b>إعدادات النظام ← اسمك ← <bdi>iCloud</bdi></b> على الماك.</li>
+    <li>في «روتين» افتح <b>الإعدادات</b>، وفي قسم <b>التذكيرات</b> فعّل <b>اربط روتين بتطبيق «التذكيرات»</b> ووافق على الإذن.</li>
+    <li>في قسم <b>فكرة</b> داخل إعدادات «روتين» اكتب اسم القائمة نفسه في خانة <b>قائمة الأفكار</b> (الافتراضي «صندوق الأفكار»).</li>
+    <li>اختر ما يناسبك في <b>رتّب الأفكار على الأيام في وقت المهام</b>: مفعّل ← تأخذ كل فكرة جديدة أول وقت فارغ. متوقف ← تبقى في صندوق «بلا موعد» حتى تسحبها بنفسك إلى اليوم الذي تريد.</li>
+  </ol>
+
+  <div class="card">
+    <p><b>ما يحدث بعدها:</b> أفكارك تظهر في «روتين» بقسم «أفكار». إنجازها في «روتين» يُنجزها في «التذكيرات»، والعكس. ومواعيد تقويمك تظهر فيه وقتاً مشغولاً (قراءة فقط) حتى لا توضع فكرة فوق موعد.</p>
+  </div>
+  <div class="card warn">
+    <p><b>تنبيه:</b> «روتين» للماك فقط، ورابط تحميله يُنشر قريباً في <a href="https://aldoraibi.github.io/tools/routine/">صفحته</a>. حتى ذلك الحين استخدم الطريقة في الخطوتين 2 و3.</p>
+  </div>
+</section>
+
+<!-- ٥ -->
+<section class="part glass" id="compare">
+  <h2><span class="num">5</span>أي طريقة تناسبك؟</h2>
+  <table>
+    <thead><tr><th scope="col">تريد…</th><th scope="col">بدون «روتين»</th><th scope="col">مع «روتين»</th></tr></thead>
+    <tbody>
+      <tr><td>أفكارك في مكان واحد</td><td>«فكرة» وحدها تكفي</td><td>—</td></tr>
+      <tr><td>موعد في التقويم</td><td>«جدولة» ← ملف موعد تفتحه</td><td>«روتين» يعرض المواعيد ويتجنّبها</td></tr>
+      <tr><td>الفكرة في «التذكيرات»</td><td>الاختصار (الخطوة 3)</td><td>الاختصار نفسه</td></tr>
+      <tr><td>وقت محدد لكل فكرة</td><td>تحدّده بيدك في «التذكيرات»</td><td>يوزّعها «روتين» تلقائياً على وقت مهامك</td></tr>
+      <tr><td>الأجهزة</td><td>أي جهاز للتقويم، وأجهزة آبل للتذكيرات</td><td>ماك، والتنبيهات تصل للجوال عبر <bdi>iCloud</bdi></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ٦ -->
+<section class="part glass" id="privacy">
+  <h2><span class="num">6</span>الخصوصية ونقل أفكارك</h2>
+  <ul class="points">
+    <li>أفكارك محفوظة في متصفح جهازك وحده. لا حساب، ولا خادم، ولا تتبّع.</li>
+    <li>ما تُرسله إلى «التذكيرات» أو التقويم يدخل تطبيقات آبل أو قوقل في حسابك، ويتزامن بحسب إعداداتها.</li>
+    <li>زر <b>تسجيل</b> يستخدم التعرّف على الكلام في متصفحك، وقد يعالج المتصفح الصوت على خوادم مزوّده (آبل في سفاري، وقوقل في كروم). تريد ألا يغادر صوتك جهازك؟ اكتب، أو استخدم مايك لوحة المفاتيح بعد تفعيل الإملاء على الجهاز.</li>
+    <li>غيّرت جهازك؟ <b>تصدير نسخة</b> في القديم، ثم <b>استيراد</b> في الجديد.</li>
+  </ul>
+</section>
+
+<!-- ٧ -->
+<section class="part glass" id="help">
+  <h2><span class="num">7</span>إذا لم يعمل شيء</h2>
+  <ul class="points">
+    <li><b>«لم يُعثر على الاختصار»:</b> الاسم في «فكرة» يجب أن يطابق اسم الاختصار حرفاً بحرف.</li>
+    <li><b>التذكير يصل فارغاً:</b> راجع الخطوة ب-3 (<b>مُدخل الاختصار</b>) والخطوة ب-5 (<b>إظهار في ورقة المشاركة</b> بنوع <b>نص</b>).</li>
+    <li><b>التذكير في قائمة غير التي تريد:</b> اختر القائمة داخل إجراء «إضافة تذكير جديد».</li>
+        <li><b>الأفكار لا تظهر في «روتين»:</b> تأكد أن «التذكيرات» مفعّلة في <bdi>iCloud</bdi> على الجهازين، وأن اسم القائمة في «روتين» مطابق، ثم اضغط <b>زامن الآن</b> في إعداداته.</li>
+    <li><b>ملف الموعد لا يفتح:</b> افتحه من تطبيق «الملفات» أو مجلد التنزيلات.</li>
+  </ul>
+  <div class="btns">
+    <a class="btn primary" href="../">افتح «فكرة»</a>
+    <a class="btn" href="../sandooq/">صندوق الأفكار</a>
+  </div>
+</section>
+
+<footer>مطوّر بواسطة <svg class="sig" xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 1492 116" role="img" aria-label="YAHYA ALDORAIBI"><g fill="none" stroke="currentColor" stroke-width="8"><path d="M0,0 L48,50"/><path d="M96,0 L48,50 L48,100"/><path transform="translate(126 0)" d="M0,100 L44,0 L88,100"/><path transform="translate(126 0)" d="M18,64 L70,64"/><path transform="translate(244 0)" d="M0,0 V100"/><path transform="translate(244 0)" d="M78,0 V100"/><path transform="translate(244 0)" d="M0,50 H78"/><path transform="translate(352 0)" d="M0,0 L48,50"/><path transform="translate(352 0)" d="M96,0 L48,50 L48,100"/><path transform="translate(478 0)" d="M0,100 L44,0 L88,100"/><path transform="translate(478 0)" d="M18,64 L70,64"/><path transform="translate(676 0)" d="M0,100 L44,0 L88,100"/><path transform="translate(676 0)" d="M18,64 L70,64"/><path transform="translate(794 0)" d="M0,0 V100 H62"/><path transform="translate(886 0)" d="M0,0 V100"/><path transform="translate(886 0)" d="M0,0 H30 C92,0 92,100 30,100 H0"/><path transform="translate(994 0)" d="M100,50 A50,50 0 1 1 0,50 A50,50 0 1 1 100,50"/><path transform="translate(1124 0)" d="M0,100 V0"/><path transform="translate(1124 0)" d="M0,0 H40 C78,0 78,54 40,54 H0"/><path transform="translate(1124 0)" d="M36,54 L74,100"/><path transform="translate(1228 0)" d="M0,100 L44,0 L88,100"/><path transform="translate(1228 0)" d="M18,64 L70,64"/><path transform="translate(1346 0)" d="M0,0 V100"/><path transform="translate(1376 0)" d="M0,0 V100"/><path transform="translate(1376 0)" d="M0,0 H36 C68,0 68,48 36,48 H0"/><path transform="translate(1376 0)" d="M0,48 H40 C76,48 76,100 40,100 H0"/><path transform="translate(1476 0)" d="M0,0 V100"/></g></svg></footer>
+
+</div>
+</body>
+</html>
