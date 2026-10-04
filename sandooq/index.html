@@ -220,8 +220,8 @@
         <input type="checkbox" id="bridge-on" checked>
         <span>أرسل كل فكرة إلى التذكيرات عبر الاختصار</span>
       </label>
-      <input type="text" id="shortcut-name" value="Fikrah" aria-label="اسم الاختصار" dir="ltr">
-      <p>الاختصار يضيف الفكرة إلى قائمة صندوق الأفكار في تطبيق التذكيرات ثم يرجعك هنا. لتقليل الومضة: افتح الاختصار ← ⓘ ← أطفئ «إظهار عند التشغيل».</p>
+      <input type="text" id="shortcut-name" value="Fikrah2" aria-label="اسم الاختصار" dir="ltr">
+      <p>الاختصار يضيف الفكرة إلى قائمة صندوق الأفكار في تطبيق التذكيرات ثم يرجعك هنا. وإن كتبت موعداً («بكرة الساعة 9 ص») يضبط التذكير وتنبيهه على وقته. لتقليل الومضة: افتح الاختصار ← ⓘ ← أطفئ «إظهار عند التشغيل».</p>
       <p>القائمة هنا سجلّ لآخر ما سجّلته — المرجع هو تطبيق التذكيرات.</p>
       <button type="button" id="resend">أعد إرسال آخر فكرة</button>
     </div>
@@ -294,13 +294,13 @@
     try { c = JSON.parse(localStorage.getItem(CFG) || 'null'); } catch (e) {}
     if (c) {
       if (typeof c.on === 'boolean') bridgeOn.checked = c.on;
-      if (c.name) nameInput.value = c.name;
+      if (c.name) nameInput.value = (c.name === 'Fikrah') ? 'Fikrah2' : c.name;   // الاختصار الجديد يفهم الموعد
     }
     function store() {
       try {
         localStorage.setItem(CFG, JSON.stringify({
           on: bridgeOn.checked,
-          name: nameInput.value.trim() || 'Fikrah'
+          name: nameInput.value.trim() || 'Fikrah2'
         }));
       } catch (e) {}
       save.textContent = bridgeOn.checked ? 'حفظ في التذكيرات' : 'حفظ';
@@ -347,7 +347,7 @@
 
       var w = document.createElement('span');
       w.className = 'when';
-      w.textContent = whenText(it.at) + (it.sent ? ' · أُرسلت' : ' · لم تُرسل');
+      w.textContent = whenText(it.at) + (it.dueLabel ? ' · موعدها ' + it.dueLabel : '') + (it.sent ? ' · أُرسلت' : ' · لم تُرسل');
       foot.appendChild(w);
 
       if (!it.sent) {
@@ -372,18 +372,88 @@
     });
   }
 
+
+  /* ---------- قراءة الموعد من النص (نفس قواعد «روتين») ---------- */
+  var SEP = ' ⏰ ';
+  function norm(t) {
+    return t.toLowerCase()
+      .replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ـ/g, '')
+      .replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+      .replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); });
+  }
+  var NL = '(?<![\\p{L}])', NR = '(?![\\p{L}])';
+  function has(s, words) {
+    return words.some(function (w) { return new RegExp(NL + w + NR, 'u').test(s); });
+  }
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function parseDay(s, today) {
+    if (has(s, ['بعد بكره', 'بعد بكرا', 'بعد غد', 'بعد الغد'])) return addDays(today, 2);
+    if (has(s, ['بكره', 'بكرا', 'باكر', 'غدا', 'غدوه', 'الغد', 'tomorrow'])) return addDays(today, 1);
+    if (has(s, ['اليوم', 'الليله', 'today', 'tonight'])) return today;
+    var days = [[0, ['الاحد', 'احد', 'sunday']], [1, ['الاثنين', 'الاتنين', 'اثنين', 'monday']],
+      [2, ['الثلاثاء', 'الثلاثا', 'الثلوث', 'tuesday']], [3, ['الاربعاء', 'الاربعا', 'الاربع', 'wednesday']],
+      [4, ['الخميس', 'خميس', 'thursday']], [5, ['الجمعه', 'جمعه', 'friday']], [6, ['السبت', 'سبت', 'saturday']]];
+    for (var i = 0; i < days.length; i++) {
+      if (has(s, days[i][1])) return addDays(today, (days[i][0] - today.getDay() + 7) % 7);
+    }
+    return null;
+  }
+  var AM = ['ص', 'صباحا', 'صباح', 'الصبح', 'الصباح', 'صبح', 'فجرا', 'الفجر', 'am', 'a.m.'];
+  var PM = ['م', 'مساء', 'مساءا', 'المساء', 'مسا', 'العصر', 'عصرا', 'عصر', 'المغرب', 'مغرب', 'الليل', 'بالليل', 'ليلا', 'العشاء', 'الظهر', 'ظهرا', 'pm', 'p.m.'];
+  function esc(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function parseTime(s) {
+    var per = AM.concat(PM).sort(function (a, b) { return b.length - a.length; }).map(esc).join('|');
+    var re = new RegExp('(?:(الساعه|ساعه|at)\\s*)?(?<!\\d)(\\d{1,2})(?::(\\d{2}))?(?!\\d)\\s*(و\\s*نص|و\\s*نصف|و\\s*ربع|الا\\s*ربع)?\\s*(?:(' + per + ')' + NR + ')?', 'gu');
+    var m;
+    while ((m = re.exec(s)) !== null) {
+      if (m[0] === '') { re.lastIndex++; continue; }
+      var prefix = m[1], h = parseInt(m[2], 10), mins = m[3] ? parseInt(m[3], 10) : 0;
+      var extra = m[4] ? m[4].replace(/\s/g, '') : null, p = m[5];
+      if (!prefix && !p && !m[3]) continue;
+      if (h > 23 || mins > 59) continue;
+      if (extra === 'ونص' || extra === 'ونصف') mins = 30;
+      else if (extra === 'وربع') mins = 15;
+      else if (extra === 'الاربع') { mins = 45; h = (h + 11) % 12 === 0 ? 12 : (h + 11) % 12; }
+      if (p && AM.indexOf(p) >= 0) { if (h === 12) h = 0; }
+      else if (p && PM.indexOf(p) >= 0) {
+        if (p === 'الظهر' || p === 'ظهرا') { if (h !== 12 && h < 6) h += 12; }
+        else if (h < 12) h += 12;
+      } else if (h <= 12 && h >= 1 && h <= 6) h += 12;
+      return [h, mins];
+    }
+    return null;
+  }
+  /** موعد بالساعة إن وُجد في النص، وإلا null (اليوم وحده يرتّبه «روتين»). */
+  function whenOf(text) {
+    var s = norm(text), now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var t = parseTime(s);
+    if (!t) return null;
+    var day = parseDay(s, today);
+    var d = new Date(day || today); d.setHours(t[0], t[1], 0, 0);
+    if (!day && d <= now) d = addDays(d, 1);
+    return d;
+  }
+  function stamp(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  function whenLabel(d) {
+    var h = d.getHours(), m = d.getMinutes(), ap = h < 12 ? 'ص' : 'م', h12 = h % 12 || 12;
+    return d.toLocaleDateString('ar', { weekday: 'long' }) + ' ' + num(h12 + (m ? ':' + pad(m) : '')) + ' ' + ap;
+  }
+
   /* ---------- الجسر ---------- */
   function fire(it) {
-    var name = (nameInput.value || 'Fikrah').trim();
+    var name = (nameInput.value || 'Fikrah2').trim();
     if (!name) { say('اكتب اسم الاختصار في الإعدادات', true); return; }
     it.sent = true;
     persist(); render();
-    say('لحظة… يُضاف للتذكيرات ويرجعك');
+    say(it.dueLabel ? 'لحظة… يُضاف للتذكيرات بموعد ' + it.dueLabel : 'لحظة… يُضاف للتذكيرات ويرجعك');
 
     var back = location.origin + location.pathname;
     window.location.href = 'shortcuts://x-callback-url/run-shortcut'
       + '?name=' + encodeURIComponent(name)
-      + '&input=text&text=' + encodeURIComponent(it.text)
+      + '&input=text&text=' + encodeURIComponent(it.due ? it.text + SEP + it.due : it.text)
       + '&x-success=' + encodeURIComponent(back)
       + '&x-error=' + encodeURIComponent(back + '?err=1');
   }
@@ -397,6 +467,8 @@
     if (recognizing) stopRec();
 
     var it = { id: String(Date.now()) + Math.random().toString(36).slice(2, 6), text: v, at: Date.now(), sent: false };
+    var due = whenOf(v);
+    if (due) { it.due = stamp(due); it.dueLabel = whenLabel(due); }
     items.push(it);
     persist();
     box.value = '';
