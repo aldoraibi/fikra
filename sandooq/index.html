@@ -220,8 +220,8 @@
         <input type="checkbox" id="bridge-on" checked>
         <span>أرسل كل فكرة إلى التذكيرات عبر الاختصار</span>
       </label>
-      <input type="text" id="shortcut-name" value="Fikrah2" aria-label="اسم الاختصار" dir="ltr">
-      <p>الاختصار يضيف الفكرة إلى قائمة صندوق الأفكار في تطبيق التذكيرات ثم يرجعك هنا. وإن كتبت موعداً («بكرة الساعة 9 ص») يضبط التذكير وتنبيهه على وقته. لتقليل الومضة: افتح الاختصار ← ⓘ ← أطفئ «إظهار عند التشغيل».</p>
+      <input type="text" id="shortcut-name" value="Fikrah" aria-label="اسم الاختصار" dir="ltr">
+      <p>الاختصار يضيف الفكرة إلى قائمة صندوق الأفكار في تطبيق التذكيرات ثم يرجعك هنا. وإن كتبت موعداً («بكرة الساعة 9 ص») تُرسل لاختصار FikrahTime فيضبط التذكير وتنبيهه على وقته. لتقليل الومضة: افتح الاختصار ← ⓘ ← أطفئ «إظهار عند التشغيل».</p>
       <p>القائمة هنا سجلّ لآخر ما سجّلته — المرجع هو تطبيق التذكيرات.</p>
       <button type="button" id="resend">أعد إرسال آخر فكرة</button>
     </div>
@@ -294,13 +294,13 @@
     try { c = JSON.parse(localStorage.getItem(CFG) || 'null'); } catch (e) {}
     if (c) {
       if (typeof c.on === 'boolean') bridgeOn.checked = c.on;
-      if (c.name) nameInput.value = (c.name === 'Fikrah') ? 'Fikrah2' : c.name;   // الاختصار الجديد يفهم الموعد
+      if (c.name) nameInput.value = (c.name === 'Fikrah2') ? 'Fikrah' : c.name;
     }
     function store() {
       try {
         localStorage.setItem(CFG, JSON.stringify({
           on: bridgeOn.checked,
-          name: nameInput.value.trim() || 'Fikrah2'
+          name: nameInput.value.trim() || 'Fikrah'
         }));
       } catch (e) {}
       save.textContent = bridgeOn.checked ? 'حفظ في التذكيرات' : 'حفظ';
@@ -374,7 +374,7 @@
 
 
   /* ---------- قراءة الموعد من النص (نفس قواعد «روتين») ---------- */
-  var SEP = ' ⏰ ';
+  var SEP = ' ⏰ ', TIMED = 'FikrahTime';
   function norm(t) {
     return t.toLowerCase()
       .replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ـ/g, '')
@@ -444,7 +444,8 @@
 
   /* ---------- الجسر ---------- */
   function fire(it) {
-    var name = (nameInput.value || 'Fikrah2').trim();
+    // فكرة فيها موعد ← FikrahTime (يضبط التذكير وتنبيهه)، وإلا الاختصار المختار (Fikrah)
+    var name = it.due ? TIMED : (nameInput.value || 'Fikrah').trim();
     if (!name) { say('اكتب اسم الاختصار في الإعدادات', true); return; }
     it.sent = true;
     persist(); render();
